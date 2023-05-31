@@ -5,14 +5,17 @@ include('./init.php');
 
 $shop_root = $_SERVER['DOCUMENT_ROOT'] . '/';
 
-// Manual change of directories from 0 to 9!
-// For example, 3 is given 
-$image_folder = '/img/p/3';
-$scan_dir = $shop_root . $image_folder;
-
 
 $limit = 1000;
-$mode = 0; // 0 = view ONLY, 1 = DELETE
+
+/*
+    MODE
+    0 = view ONLY,
+    1 = DELET
+*/
+$mode = 0; 
+
+
 
 $displayed_images = 0;
 $total_size = 0;
@@ -40,27 +43,27 @@ function displayImages($directory)
 
                     if (!isImageAssignedToProduct($imageId)) {
 
-	                       	if($mode === 0){
-	                       		echo '<tr>';
-		                        echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $imagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
-		                        $fileSize = getFormattedFileSize($file);
-		                        $total_size += $fileSize;
-		                        echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSize . ' KB</td>';
-		                        echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $imagePath . '</td>';
-		                        echo '</tr>';
+                            if($mode === 0){
+                                echo '<tr>';
+                                echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $imagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
+                                $fileSize = getFormattedFileSize($file);
+                                $total_size += $fileSize;
+                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSize . ' KB</td>';
+                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $imagePath . '</td>';
+                                echo '</tr>';
 
-	                       	}elseif($mode === 1 ){
-	                       		echo '<tr>';
-	                       		$fileSize = getFormattedFileSize($file);
-		                        $total_size += $fileSize;
+                            }elseif($mode === 1 ){
+                                echo '<tr>';
+                                $fileSize = getFormattedFileSize($file);
+                                $total_size += $fileSize;
 
-	                       		if (unlink($shop_root . $imagePath)) {
-							        echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $imagePath . '</p></td>';
-							    } else {
-							        echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $imagePath . '</p></td>';
-							    }
-							    echo '</tr>';
-	                       	}
+                                if (unlink($shop_root . $imagePath)) {
+                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $imagePath . '</p></td>';
+                                } else {
+                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $imagePath . '</p></td>';
+                                }
+                                echo '</tr>';
+                            }
 
 
                         $displayed_images++;
@@ -105,7 +108,13 @@ function getFormattedFileSize($file)
 echo '<h2>Lista zdjęć:</h2>';
 echo '<table style="border: 1px solid #ccc; border-collapse: collapse;">';
 echo '<tr><th style="border: 1px solid #ccc; padding: 8px;">Zdjęcie</th><th style="border: 1px solid #ccc; padding: 8px;">Rozmiar (KB)</th></tr>';
-displayImages($scan_dir);
+
+for ($i = 1; $i <= 9; $i++) {
+    $image_folder = '/img/p/' . $i;
+    $scan_dir = $shop_root . $image_folder;
+    displayImages($scan_dir);
+}
+
 echo '</table>';
 
 echo '<p><strong>Całkowity rozmiar zdjęć: ' . $total_size . ' KB</strong></p>';
