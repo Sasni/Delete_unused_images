@@ -4,6 +4,9 @@ include('./config/config.inc.php');
 include('./init.php');
 
 $shop_root = $_SERVER['DOCUMENT_ROOT'] . '/';
+
+// Manual change of directories from 0 to 9!
+// For example, 3 is given 
 $image_folder = '/img/p/3';
 $scan_dir = $shop_root . $image_folder;
 
