@@ -5,17 +5,14 @@ include('./init.php');
 
 $shop_root = $_SERVER['DOCUMENT_ROOT'] . '/';
 
-
 $limit = 1000;
 
 /*
     MODE
     0 = view ONLY,
-    1 = DELET
+    1 = DELETE
 */
 $mode = 0; 
-
-
 
 $displayed_images = 0;
 $total_size = 0;
