@@ -33,7 +33,7 @@ Skopiuj plik `foton.php` na swój serwer www (rekomeduję do katalogu głównego
 
 ## Użycie
 
-1. Otwórz skrypt w przeglądarce internetowej np `https://twój_sklep.pl.foton.php`.
+1. Otwórz skrypt w przeglądarce internetowej np `https://twój_sklep.pl/foton.php`.
 
 2. Skrypt przeszuka katalogi z obrazami (`/img/p/1` do `/img/p/9`), wyświetli tylko te które nie są przypisane do żadnego produktu. W przypadku wybrania `$mode = 1; `obrazy te zostaną usunięte.
 
