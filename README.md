@@ -4,9 +4,7 @@ Ten skrypt PHP przeszukuje katalogi z obrazami w sklepie internetowym opartym na
 
 ## Wymagania
 
-- PHP 7.0 lub nowszy
-- Serwer WWW (np. Apache, Nginx)
-- Baza danych MySQL
+- Prestashop (testowane na 1.7)
 
 ## Instalacja
 
