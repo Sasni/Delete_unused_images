@@ -33,62 +33,62 @@ function displayImages($directory)
 {
     global $shop_root, $displayed_images, $limit, $total_bytes, $mode, $allowed_image_extensions, $image_ids;
 
-    if ($displayed_images >= $limit) {
+    if ($displayed_images >= $limit || !is_dir($directory) || !is_readable($directory)) {
         return;
     }
 
-    $files = glob($directory . '/*');
-    if ($files) {
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                $imagePath = str_replace($shop_root, '', $file);
-                $imagePath = str_replace('//', '/', $imagePath);
-                $escapedImagePath = htmlspecialchars($imagePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::LEAVES_ONLY,
+        RecursiveIteratorIterator::CATCH_GET_CHILD
+    );
 
-                $fileName = basename($imagePath);
-                $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+    foreach ($iterator as $entry) {
+        if (!$entry->isFile()) {
+            continue;
+        }
 
-                if (in_array(strtolower($extension), $allowed_image_extensions, true)) {
-                    $imageId = getImageIdFromPath($imagePath);
-                    if ($imageId <= 0) {
-                        continue;
-                    }
+        $file = $entry->getPathname();
+        $imagePath = str_replace($shop_root, '', $file);
+        $imagePath = str_replace('//', '/', $imagePath);
+        $escapedImagePath = htmlspecialchars($imagePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
-                    if (!isset($image_ids[$imageId])) {
-                        $fileSizeBytes = filesize($file);
+        $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
+        if (!in_array(strtolower($extension), $allowed_image_extensions, true)) {
+            continue;
+        }
 
-                            if($mode === 0){
-                                $total_bytes += $fileSizeBytes;
-                                $fileSizeKB = round($fileSizeBytes / 1024, 2);
-                                echo '<tr>';
-                                echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $escapedImagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
-                            echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSizeKB . ' KB</td>';
-                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $escapedImagePath . '</td>';
-                                echo '</tr>';
+        $imageId = getImageIdFromPath($imagePath);
+        if ($imageId <= 0 || isset($image_ids[$imageId])) {
+            continue;
+        }
 
-                            }elseif($mode === 1 ){
-                                echo '<tr>';
+        $fileSizeBytes = filesize($file);
 
-                                if (unlink($shop_root . $imagePath)) {
-                                    $total_bytes += $fileSizeBytes;
-                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $escapedImagePath . '</p></td>';
-                                } else {
-                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $escapedImagePath . '</p></td>';
-                                }
-                                echo '</tr>';
-                            }
+        if ($mode === 0) {
+            $total_bytes += $fileSizeBytes;
+            $fileSizeKB = round($fileSizeBytes / 1024, 2);
+            echo '<tr>';
+            echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $escapedImagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
+            echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSizeKB . ' KB</td>';
+            echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $escapedImagePath . '</td>';
+            echo '</tr>';
+        } elseif ($mode === 1) {
+            echo '<tr>';
 
-
-                        $displayed_images++;
-                    }
-                }
-
-                if ($displayed_images >= $limit) {
-                    break;
-                }
-            } elseif (is_dir($file)) {
-                displayImages($file);
+            if (unlink($file)) {
+                $total_bytes += $fileSizeBytes;
+                echo '<td style="border: 1px solid #ccc; padding: 8px;"><p style="color: green;">Zdjęcie zostało usunięte: ' . $escapedImagePath . '</p></td>';
+            } else {
+                echo '<td style="border: 1px solid #ccc; padding: 8px;"><p style="color: red;">Błąd usuwania zdjęcia: ' . $escapedImagePath . '</p></td>';
             }
+
+            echo '</tr>';
+        }
+
+        $displayed_images++;
+        if ($displayed_images >= $limit) {
+            break;
         }
     }
 }
