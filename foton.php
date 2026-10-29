@@ -16,10 +16,11 @@ $mode = 0;
 
 $displayed_images = 0;
 $total_size = 0;
+$allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
 function displayImages($directory)
 {
-    global $shop_root, $image_folder, $displayed_images, $limit, $total_size, $mode;
+    global $shop_root, $image_folder, $displayed_images, $limit, $total_size, $mode, $allowed_image_extensions;
 
     if ($displayed_images >= $limit) {
         return;
@@ -35,7 +36,7 @@ function displayImages($directory)
                 $fileName = basename($imagePath);
                 $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
 
-                if ($fileName !== 'fileType' && $extension !== 'php') {
+                if (in_array(strtolower($extension), $allowed_image_extensions, true)) {
                     $imageId = getImageIdFromPath($imagePath);
                     if ($imageId <= 0) {
                         continue;
@@ -91,7 +92,10 @@ function isImageAssignedToProduct($imageId)
 {
     // Check if the image is assigned to any product
     $result = Db::getInstance()->getValue('
-        SELECT id_image FROM ' . _DB_PREFIX_ . 'image WHERE id_image = ' . (int)$imageId
+        SELECT id_image FROM ' . _DB_PREFIX_ . 'image WHERE id_image = ' . (int)$imageId . '
+        UNION
+        SELECT id_image FROM ' . _DB_PREFIX_ . 'image_shop WHERE id_image = ' . (int)$imageId . '
+        LIMIT 1'
     );
 
     return !empty($result);
