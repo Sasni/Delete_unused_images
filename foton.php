@@ -15,7 +15,7 @@ $limit = 1000;
 $mode = 0; 
 
 $displayed_images = 0;
-$total_size = 0;
+$total_bytes = 0;
 $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
 function displayImages($directory)
@@ -43,20 +43,19 @@ function displayImages($directory)
                     }
 
                     if (!isImageAssignedToProduct($imageId)) {
+                        $fileSizeBytes = filesize($file);
+                        $total_bytes += $fileSizeBytes;
+                        $fileSizeKB = round($fileSizeBytes / 1024, 2);
 
                             if($mode === 0){
                                 echo '<tr>';
                                 echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $imagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
-                                $fileSize = getFormattedFileSize($file);
-                                $total_size += $fileSize;
-                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSize . ' KB</td>';
+                            echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSizeKB . ' KB</td>';
                                 echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $imagePath . '</td>';
                                 echo '</tr>';
 
                             }elseif($mode === 1 ){
                                 echo '<tr>';
-                                $fileSize = getFormattedFileSize($file);
-                                $total_size += $fileSize;
 
                                 if (unlink($shop_root . $imagePath)) {
                                     echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $imagePath . '</p></td>';
@@ -101,13 +100,6 @@ function isImageAssignedToProduct($imageId)
     return !empty($result);
 }
 
-function getFormattedFileSize($file)
-{
-    $sizeInBytes = filesize($file);
-    $sizeInKB = round($sizeInBytes / 1024, 2);
-    return $sizeInKB;
-}
-
 echo '<h2>Lista zdjęć:</h2>';
 echo '<table style="border: 1px solid #ccc; border-collapse: collapse;">';
 echo '<tr><th style="border: 1px solid #ccc; padding: 8px;">Zdjęcie</th><th style="border: 1px solid #ccc; padding: 8px;">Rozmiar (KB)</th></tr>';
@@ -120,6 +112,6 @@ for ($i = 1; $i <= 9; $i++) {
 
 echo '</table>';
 
-echo '<p><strong>Całkowity rozmiar zdjęć: ' . $total_size . ' KB</strong></p>';
+echo '<p><strong>Całkowity rozmiar zdjęć: ' . round($total_bytes / 1048576, 2) . ' MB</strong></p>';
 
 ?>
