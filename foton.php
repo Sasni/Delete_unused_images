@@ -5,7 +5,7 @@ include('./init.php');
 
 $shop_root = $_SERVER['DOCUMENT_ROOT'] . '/';
 
-$limit = 500;
+$limit = 100;
 
 /*
     MODE
@@ -14,10 +14,12 @@ $limit = 500;
 */
 $mode = 0; 
 $allowed_delete_ip = 'WPISZ_TUTAJ_SWOJE_IP';
+$remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+$escaped_remote_ip = htmlspecialchars($remote_ip, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+echo '<p>Adres IP połączenia: ' . $escaped_remote_ip . '</p>';
 
 if ($mode === 1) {
-    $remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
-
     if (filter_var($allowed_delete_ip, FILTER_VALIDATE_IP) === false || $remote_ip !== $allowed_delete_ip) {
         http_response_code(403);
         exit('Brak dostępu do trybu kasowania z tego adresu IP.');
