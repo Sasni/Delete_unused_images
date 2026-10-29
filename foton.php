@@ -32,6 +32,7 @@ function displayImages($directory)
             if (is_file($file)) {
                 $imagePath = str_replace($shop_root, '', $file);
                 $imagePath = str_replace('//', '/', $imagePath);
+                $escapedImagePath = htmlspecialchars($imagePath, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 
                 $fileName = basename($imagePath);
                 $extension = pathinfo($imagePath, PATHINFO_EXTENSION);
@@ -49,9 +50,9 @@ function displayImages($directory)
                                 $total_bytes += $fileSizeBytes;
                                 $fileSizeKB = round($fileSizeBytes / 1024, 2);
                                 echo '<tr>';
-                                echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $imagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
+                                echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $escapedImagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
                             echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSizeKB . ' KB</td>';
-                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $imagePath . '</td>';
+                                echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $escapedImagePath . '</td>';
                                 echo '</tr>';
 
                             }elseif($mode === 1 ){
@@ -59,9 +60,9 @@ function displayImages($directory)
 
                                 if (unlink($shop_root . $imagePath)) {
                                     $total_bytes += $fileSizeBytes;
-                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $imagePath . '</p></td>';
+                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $escapedImagePath . '</p></td>';
                                 } else {
-                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $imagePath . '</p></td>';
+                                    echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $escapedImagePath . '</p></td>';
                                 }
                                 echo '</tr>';
                             }
