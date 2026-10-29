@@ -17,10 +17,21 @@ $mode = 0;
 $displayed_images = 0;
 $total_bytes = 0;
 $allowed_image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+$image_rows = Db::getInstance()->executeS('
+    SELECT id_image FROM ' . _DB_PREFIX_ . 'image
+    UNION
+    SELECT id_image FROM ' . _DB_PREFIX_ . 'image_shop'
+);
+
+if ($image_rows === false) {
+    die('Nie udało się pobrać listy obrazów z bazy.');
+}
+
+$image_ids = array_flip(array_column($image_rows, 'id_image'));
 
 function displayImages($directory)
 {
-    global $shop_root, $image_folder, $displayed_images, $limit, $total_size, $mode, $allowed_image_extensions;
+    global $shop_root, $displayed_images, $limit, $total_bytes, $mode, $allowed_image_extensions, $image_ids;
 
     if ($displayed_images >= $limit) {
         return;
@@ -43,7 +54,7 @@ function displayImages($directory)
                         continue;
                     }
 
-                    if (!isImageAssignedToProduct($imageId)) {
+                    if (!isset($image_ids[$imageId])) {
                         $fileSizeBytes = filesize($file);
 
                             if($mode === 0){
@@ -87,19 +98,6 @@ function getImageIdFromPath($imagePath)
     $fileName = basename($imagePath);
     $imageId = explode('-', $fileName)[0];
     return (int) pathinfo($imageId, PATHINFO_FILENAME);
-}
-
-function isImageAssignedToProduct($imageId)
-{
-    // Check if the image is assigned to any product
-    $result = Db::getInstance()->getValue('
-        SELECT id_image FROM ' . _DB_PREFIX_ . 'image WHERE id_image = ' . (int)$imageId . '
-        UNION
-        SELECT id_image FROM ' . _DB_PREFIX_ . 'image_shop WHERE id_image = ' . (int)$imageId . '
-        LIMIT 1'
-    );
-
-    return !empty($result);
 }
 
 echo '<h2>Lista zdjęć:</h2>';
