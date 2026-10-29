@@ -37,6 +37,9 @@ function displayImages($directory)
 
                 if ($fileName !== 'fileType' && $extension !== 'php') {
                     $imageId = getImageIdFromPath($imagePath);
+                    if ($imageId <= 0) {
+                        continue;
+                    }
 
                     if (!isImageAssignedToProduct($imageId)) {
 
@@ -79,10 +82,9 @@ function displayImages($directory)
 
 function getImageIdFromPath($imagePath)
 {
-    // Extract the image ID from the path
     $fileName = basename($imagePath);
     $imageId = explode('-', $fileName)[0];
-    return $imageId;
+    return (int) pathinfo($imageId, PATHINFO_FILENAME);
 }
 
 function isImageAssignedToProduct($imageId)
