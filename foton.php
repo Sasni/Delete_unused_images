@@ -44,10 +44,10 @@ function displayImages($directory)
 
                     if (!isImageAssignedToProduct($imageId)) {
                         $fileSizeBytes = filesize($file);
-                        $total_bytes += $fileSizeBytes;
-                        $fileSizeKB = round($fileSizeBytes / 1024, 2);
 
                             if($mode === 0){
+                                $total_bytes += $fileSizeBytes;
+                                $fileSizeKB = round($fileSizeBytes / 1024, 2);
                                 echo '<tr>';
                                 echo '<td style="border: 1px solid #ccc; padding: 8px;"><img src="' . $imagePath . '" style="max-width: 200px; max-height: 200px;" /></td>';
                             echo '<td style="border: 1px solid #ccc; padding: 8px;">' . $fileSizeKB . ' KB</td>';
@@ -58,6 +58,7 @@ function displayImages($directory)
                                 echo '<tr>';
 
                                 if (unlink($shop_root . $imagePath)) {
+                                    $total_bytes += $fileSizeBytes;
                                     echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: green;">Zdjęcie zostało usunięte: ' . $imagePath . '</p></td>';
                                 } else {
                                     echo '<td style="border: 1px solid #ccc; padding: 8px;"> <p style="color: red;">Błąd usuwania zdjęcia: ' . $imagePath . '</p></td>';
