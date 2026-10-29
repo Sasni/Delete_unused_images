@@ -5,7 +5,7 @@ include('./init.php');
 
 $shop_root = $_SERVER['DOCUMENT_ROOT'] . '/';
 
-$limit = 1000;
+$limit = 500;
 
 /*
     MODE
@@ -13,6 +13,23 @@ $limit = 1000;
     1 = DELETE
 */
 $mode = 0; 
+$allowed_delete_ip = 'WPISZ_TUTAJ_SWOJE_IP';
+
+if ($mode === 1) {
+    $remote_ip = $_SERVER['REMOTE_ADDR'] ?? '';
+
+    if (filter_var($allowed_delete_ip, FILTER_VALIDATE_IP) === false || $remote_ip !== $allowed_delete_ip) {
+        http_response_code(403);
+        exit('Brak dostępu do trybu kasowania z tego adresu IP.');
+    }
+
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+        echo '<form method="post">';
+        echo '<button type="submit">Potwierdź kasowanie</button>';
+        echo '</form>';
+        exit;
+    }
+}
 
 $displayed_images = 0;
 $total_bytes = 0;

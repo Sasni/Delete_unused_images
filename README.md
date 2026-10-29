@@ -24,10 +24,12 @@ Skopiuj plik `foton.php` na swój serwer www (rekomeduję do katalogu głównego
 
 3. Ustaw tryb działania skryptu (domyslnie jest 0 - tylko wyświetlanie):
     - `0` - tylko wyświetlanie obrazów
-    - `1` - usuwanie obrazów
+    - `1` - usuwanie obrazów (wymaga dozwolonego adresu IP)
     ```php
     $mode = 0;
     ```
+
+    W `$allowed_delete_ip` wpisz swój publiczny adres IP jako tekst, np. `$allowed_delete_ip = '203.0.113.10';`. Zastąp przykład swoim adresem. Niepoprawny lub pusty wpis blokuje kasowanie. Skrypt porównuje go z `$_SERVER['REMOTE_ADDR']` i nie ufa nagłówkowi `X-Forwarded-For`. Po wejściu z dozwolonego IP trzeba jeszcze potwierdzić kasowanie przyciskiem wysyłającym POST.
 
 ## Użycie
 
